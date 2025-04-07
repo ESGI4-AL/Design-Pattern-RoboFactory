@@ -1,0 +1,83 @@
+﻿# Dossiers de build
+bin/
+obj/
+
+# Fichiers générés par Visual Studio
+.vs/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.dbmdl
+*.dbproj.schemaview
+*.pfx
+*.publishsettings
+*.pubxml
+*.vbproj.user
+*.csproj.user
+ServiceFabricBackup/
+*.rptproj.bak
+
+# Fichiers de cache et configuration locale
+*.cache
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# Fichiers de publication web
+/packages/
+/node_modules/
+/wwwroot/assets/
+
+# Fichiers spécifiques à ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Fichiers temporaires
+[Tt]emp/
+[Tt]mp/
+*.tmp
+*.swp
+*~
+
+# Fichiers de sauvegarde
+*.[Bb]ak
+*.bak
+*.backup
+
+# Fichiers OS spécifiques
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Fichiers de test et couverture
+TestResults/
+[Tt]est[Rr]esult*/
+*.coverage
+*.coveragexml
+*.opencover.xml
+
+# Logs
+logs/
+*.log
+
+# Fichiers NuGet
+packages/
+*.nupkg
+*.snupkg
+# Fichiers NuGet v3
+project.lock.json
+project.assets.json
+*.nuget.props
+*.nuget.targets
+
+# Fichiers Rider
+.idea/
+*.sln.iml
