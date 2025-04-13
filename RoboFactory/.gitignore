@@ -1,6 +1,6 @@
 ﻿# Dossiers de build
-bin/
-obj/
+RoboFactory/bin/
+RoboFactory/obj/
 
 # Fichiers générés par Visual Studio
 .vs/
