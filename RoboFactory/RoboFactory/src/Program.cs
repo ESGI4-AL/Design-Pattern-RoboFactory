@@ -1,4 +1,5 @@
-﻿using RoboFactory.Utils;
+﻿using RoboFactory.Commands;
+using RoboFactory.Utils;
 
 namespace RoboFactory
 {
@@ -7,7 +8,9 @@ namespace RoboFactory
         private static void Main(string[] args)
         {
             var factoryInventory = new FactoryInventory();
-            var commandManager = new CommandManager(factoryInventory);
+            var assemblyManager = new AssemblyManager();
+            var commandService = new InventoryCommandService(factoryInventory, assemblyManager);
+            var commandManager = new CommandManager(commandService);
             
             DisplayMessages.DisplayWelcomeMessage();
             Console.WriteLine("Enter your command :");
