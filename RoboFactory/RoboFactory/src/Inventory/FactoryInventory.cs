@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using RoboFactory.Factories;
+using RoboFactory.Models;
 
 namespace RoboFactory;
 
@@ -18,13 +19,36 @@ public class FactoryInventory
      */
     private void InitializeInventory()
     {
-        AddItem(FactorySelector.GetFactory(ECategory.Military).CreateRobot());
-        AddItem(FactorySelector.GetFactory(ECategory.Military).CreateRobot());
-        AddItem(FactorySelector.GetFactory(ECategory.Domestic).CreateRobot());
-        AddItem(FactorySelector.GetFactory(ECategory.Domestic).CreateRobot());
-        AddItem(FactorySelector.GetFactory(ECategory.Industrial).CreateRobot());
-        AddItem(new InventoryItem("Core_CM1", ECategory.Military, EItemType.Core));
-        AddItem(new InventoryItem("Core_CM1", ECategory.Military, EItemType.Core));
+        var categories = new[] { ECategory.Military, ECategory.Domestic, ECategory.Industrial };
+
+        foreach (var category in categories)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                var core = new Core(category);
+                var generator = new Generator(category);
+                var arms = new Arms(category);
+                var legs = new Legs(category);
+
+                var robot = FactorySelector.GetFactory(category)
+                    .CreateRobot(core, generator, arms, legs);
+
+                AddItem(robot);
+            }
+
+            // Ajouter aussi des composants seuls
+            AddItem(new CoreSystem(category));
+            AddItem(new Core(category));
+            AddItem(new Generator(category));
+            AddItem(new Arms(category));
+            AddItem(new Legs(category));
+
+            for (int i = 0; i < 3; i++)
+            {
+                AddItem(new Core(category));
+                AddItem(new Generator(category));
+            }
+        }
     }
     
     /**
@@ -42,8 +66,22 @@ public class FactoryInventory
         }
         _items.Add(item);
     }
+    
+    private InventoryItem TakeItem(ECategory category, EItemType itemType)
+    {
+        var item = FindItem(category, itemType);
+        if (item == null)
+            throw new InvalidOperationException("Item not found");
+        
+        var popped = item.PopItem();
+        
+        if (item == popped)
+            _items.Remove(item);
 
-    private InventoryItem? GetItem(ECategory category, EItemType itemType)
+        return popped;
+    }
+
+    private InventoryItem? FindItem(ECategory category, EItemType itemType)
     {
         foreach (var item in _items)
         {
@@ -53,6 +91,23 @@ public class FactoryInventory
             }
         }
         return null;
+    }
+    
+    public T TakeRobotComponent<T>(ECategory category) where T : InventoryItem
+    {
+        EItemType itemType = typeof(T) switch
+        {
+            Type t when t == typeof(CoreSystem) => EItemType.System,
+            Type t when t == typeof(Core) => EItemType.Core,
+            Type t when t == typeof(Arms) => EItemType.Arms,
+            Type t when t == typeof(Legs) => EItemType.Legs,
+            Type t when t == typeof(Generator) => EItemType.Generator,
+            _ => throw new InvalidOperationException("Unknown component type")
+        };
+        
+        InventoryItem item = TakeItem(category, itemType);
+        
+        return item as T ?? throw new InvalidOperationException("Unknown component type");
     }
     
     /**
@@ -81,7 +136,7 @@ public class FactoryInventory
             var (category, itemType) = part.Key;
             var quantity = part.Value;
             
-            InventoryItem? inventoryItem = GetItem(category, itemType);
+            InventoryItem? inventoryItem = FindItem(category, itemType);
             if (inventoryItem == null || inventoryItem.CountItem() < quantity)
                 return false;
         }

@@ -1,11 +1,12 @@
+using RoboFactory.Models;
 using RoboFactory.Utils;
 
 namespace RoboFactory.Factories;
 
 public class MilitaryFactory : IRobotFactory
 {
-    public InventoryItem CreateRobot()
+    public Robot CreateRobot(Core core, Generator generator, Arms arms, Legs legs)
     {
-        return new InventoryItem(RobotResolver.ResolveCategoryType(ECategory.Military), ECategory.Military, EItemType.Robot);
+        return new Robot(ECategory.Military, core, generator, arms, legs);
     }
 }

@@ -1,4 +1,5 @@
 using System.Text;
+using RoboFactory.Models;
 using RoboFactory.Utils;
 
 namespace RoboFactory.Commands;
@@ -80,9 +81,19 @@ public class InventoryCommandService
         {
             ECategory category = robotRequest.Key.Item1;
             int quantity = robotRequest.Value;
-            InventoryItem robots = _assemblyManager.AssembleRobots(category, quantity);
-            
-            _inventory.AddItem(robots);
+
+            for (int i = 0; i < quantity; i++)
+            {
+                var system = _inventory.TakeRobotComponent<CoreSystem>(category);
+                var core = _inventory.TakeRobotComponent<Core>(category);
+                var generator = _inventory.TakeRobotComponent<Generator>(category);
+                var arms = _inventory.TakeRobotComponent<Arms>(category);
+                var legs = _inventory.TakeRobotComponent<Legs>(category);
+                
+                Robot robot = _assemblyManager.AssembleRobot(category, system, core, generator, arms, legs);
+                
+                _inventory.AddItem(robot);
+            }
         }
         
         Output = SystemResponseTypeUtils.ToString(SystemResponseType.StockUpdated);

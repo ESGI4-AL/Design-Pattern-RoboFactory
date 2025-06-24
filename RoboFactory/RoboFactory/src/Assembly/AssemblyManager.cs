@@ -1,11 +1,19 @@
 ﻿using System.Text;
 using RoboFactory.Factories;
+using RoboFactory.Models;
 using RoboFactory.Utils;
 
 namespace RoboFactory;
 
 public class AssemblyManager()
 {
+    public Robot AssembleRobot(ECategory category, CoreSystem system, Core core, Generator generator, Arms arms, Legs legs)
+    {
+        var factory = FactorySelector.GetFactory(category);
+        var robot = factory.CreateRobot(core.PopItem(), generator.PopItem(), arms.PopItem(), legs.PopItem());
+        return robot;
+    }
+    
     /**
      * Calcule les pièces nécessaires pour assembler les robots demandés.
      * Retourne un dictionnaire avec toutes les pièces nécessaires et leur quantité.
@@ -59,22 +67,5 @@ public class AssemblyManager()
         }
             
         return output.ToString();
-    }
-
-    // TODO Ici on devrait prendre tous les compos necessaires donc ça force de creer des classes Core() Generator() etc
-    // et tout mettre en parametre de cette fonction (on assemble les pièces quoi)
-    public InventoryItem AssembleRobots(ECategory category, int quantity)
-    {
-        var factory = FactorySelector.GetFactory(category);
-        var firstRobot = factory.CreateRobot();
-        quantity -= 1;
-        
-        for (var i = 0; i < quantity; i++)
-        {
-            var robot = factory.CreateRobot();
-            firstRobot.AddItem(robot);
-        }
-        
-        return firstRobot;
     }
 }

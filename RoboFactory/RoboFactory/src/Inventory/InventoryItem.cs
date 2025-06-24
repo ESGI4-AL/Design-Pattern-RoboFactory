@@ -14,21 +14,33 @@ public class InventoryItem
         ItemType = itemType;
     }
 
+    public bool HasNext()
+    {
+        return Next != null;
+    }
+
     public void AddItem(InventoryItem item)
     {
         if (Next == null) Next = item;
         else Next.AddItem(item);
     }
     
-    public InventoryItem PopItem()
+    public virtual InventoryItem PopItem()
     {
-        if (Next != null) return Next.PopItem();
-        return this;
+        if (! HasNext())
+            return this;
+
+        var last = Next.PopItem();
+        
+        if (! Next.HasNext())
+            Next = null;
+
+        return last;
     }
 
     public int CountItem()
     {
-        if (Next != null) return 1 + Next.CountItem();
+        if (HasNext()) return 1 + Next.CountItem();
         return 1;
     }
 }
