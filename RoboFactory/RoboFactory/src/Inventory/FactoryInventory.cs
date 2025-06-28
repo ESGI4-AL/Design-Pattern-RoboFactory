@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using RoboFactory.Factories;
 using RoboFactory.Models;
 
 namespace RoboFactory;
@@ -25,15 +24,13 @@ public class FactoryInventory
         {
             for (int i = 0; i < 5; i++)
             {
-                var core = new Core(category);
-                var generator = new Generator(category);
-                var arms = new Arms(category);
-                var legs = new Legs(category);
-
-                var robot = FactorySelector.GetFactory(category)
-                    .CreateRobot(core, generator, arms, legs);
-
-                AddItem(robot);
+                var robotBuilder = new RobotBuilder(category);
+                robotBuilder.SetCore(new Core(category));
+                robotBuilder.SetGenerator(new Generator(category));
+                robotBuilder.SetArms(new Arms(category));
+                robotBuilder.SetLegs(new Legs(category));
+                
+                AddItem(robotBuilder.Build());
             }
 
             // Ajouter aussi des composants seuls

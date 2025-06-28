@@ -8,8 +8,8 @@ namespace RoboFactory
         private static void Main(string[] args)
         {
             var factoryInventory = new FactoryInventory();
-            var assemblyManager = new AssemblyManager();
-            var commandService = new InventoryCommandService(factoryInventory, assemblyManager);
+            var assemblyManual = new AssemblyManual();
+            var commandService = new InventoryCommandService(factoryInventory, assemblyManual);
             var commandManager = new CommandManager(commandService);
             
             DisplayMessages.DisplayWelcomeMessage();

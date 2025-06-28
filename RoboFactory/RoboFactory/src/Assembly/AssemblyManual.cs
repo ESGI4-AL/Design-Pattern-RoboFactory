@@ -1,19 +1,10 @@
 ﻿using System.Text;
-using RoboFactory.Factories;
-using RoboFactory.Models;
 using RoboFactory.Utils;
 
 namespace RoboFactory;
 
-public class AssemblyManager()
+public class AssemblyManual()
 {
-    public Robot AssembleRobot(ECategory category, CoreSystem system, Core core, Generator generator, Arms arms, Legs legs)
-    {
-        var factory = FactorySelector.GetFactory(category);
-        var robot = factory.CreateRobot(core.PopItem(), generator.PopItem(), arms.PopItem(), legs.PopItem());
-        return robot;
-    }
-    
     /**
      * Calcule les pièces nécessaires pour assembler les robots demandés.
      * Retourne un dictionnaire avec toutes les pièces nécessaires et leur quantité.

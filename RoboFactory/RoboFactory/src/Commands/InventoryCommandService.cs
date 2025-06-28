@@ -7,13 +7,13 @@ namespace RoboFactory.Commands;
 public class InventoryCommandService
 {
     private readonly FactoryInventory _inventory;
-    private readonly AssemblyManager _assemblyManager;
+    private readonly AssemblyManual _assemblyManual;
     public string Output = "";
 
-    public InventoryCommandService(FactoryInventory inventory,  AssemblyManager assemblyManager)
+    public InventoryCommandService(FactoryInventory inventory,  AssemblyManual assemblyManual)
     {
         _inventory = inventory;
-        _assemblyManager = assemblyManager;
+        _assemblyManual = assemblyManual;
     }
 
     public void Stocks()
@@ -40,7 +40,7 @@ public class InventoryCommandService
             
         // Total des pièces nécessaires
         outputBuilder.AppendLine("Total :");
-        var totalParts = _assemblyManager.CalculateRequiredPieces(request);
+        var totalParts = _assemblyManual.CalculateRequiredPieces(request);
         foreach (var part in totalParts)
         {
             var (category, type) = part.Key;
@@ -52,12 +52,12 @@ public class InventoryCommandService
 
     public void Instructions(Dictionary<(ECategory, EItemType), int> request)
     {
-        Output = _assemblyManager.GenerateAssemblyInstructions(request);
+        Output = _assemblyManual.GenerateAssemblyInstructions(request);
     }
 
     public void Verify(Dictionary<(ECategory, EItemType), int> request)
     {
-        Dictionary<(ECategory, EItemType), int> requiredPieces = _assemblyManager.CalculateRequiredPieces(request);
+        Dictionary<(ECategory, EItemType), int> requiredPieces = _assemblyManual.CalculateRequiredPieces(request);
             
         // Vérifie si les stocks sont suffisants
         if (_inventory.HasSufficientStock(requiredPieces))
@@ -69,7 +69,7 @@ public class InventoryCommandService
     public void Produce(Dictionary<(ECategory, EItemType), int> request)
     {
         // Calcule les pièces nécessaires
-        Dictionary<(ECategory, EItemType), int> requiredPieces = _assemblyManager.CalculateRequiredPieces(request);
+        Dictionary<(ECategory, EItemType), int> requiredPieces = _assemblyManual.CalculateRequiredPieces(request);
         
         // Vérifie si les stocks sont suffisants
         if (! _inventory.HasSufficientStock(requiredPieces))
@@ -80,17 +80,17 @@ public class InventoryCommandService
         foreach (var robotRequest in request)
         {
             ECategory category = robotRequest.Key.Item1;
+            RobotBuilder robotBuilder = new RobotBuilder(category);
             int quantity = robotRequest.Value;
-
+            
             for (int i = 0; i < quantity; i++)
             {
                 var system = _inventory.TakeRobotComponent<CoreSystem>(category);
-                var core = _inventory.TakeRobotComponent<Core>(category);
-                var generator = _inventory.TakeRobotComponent<Generator>(category);
-                var arms = _inventory.TakeRobotComponent<Arms>(category);
-                var legs = _inventory.TakeRobotComponent<Legs>(category);
-                
-                Robot robot = _assemblyManager.AssembleRobot(category, system, core, generator, arms, legs);
+                robotBuilder.SetCore(_inventory.TakeRobotComponent<Core>(category));
+                robotBuilder.SetGenerator(_inventory.TakeRobotComponent<Generator>(category));
+                robotBuilder.SetArms(_inventory.TakeRobotComponent<Arms>(category));
+                robotBuilder.SetLegs(_inventory.TakeRobotComponent<Legs>(category));
+                var robot = robotBuilder.Build();
                 
                 _inventory.AddItem(robot);
             }
