@@ -1,9 +1,7 @@
 namespace RoboFactory.Commands.CommandTypes;
 
-public class StocksCommand : CommandBase
+public class StocksCommand(CommandService service, Dictionary<RobotTemplate, int> request) : CommandBase(service, request)
 {
-    public StocksCommand(InventoryCommandService service, Dictionary<(ECategory, EItemType), int> request) : base(service, request) { }
-    
     public override void Execute()
     {
         Service.Stocks();

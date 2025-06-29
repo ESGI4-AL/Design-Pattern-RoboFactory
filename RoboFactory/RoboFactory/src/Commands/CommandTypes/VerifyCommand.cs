@@ -1,9 +1,7 @@
 namespace RoboFactory.Commands.CommandTypes;
 
-public class VerifyCommand : CommandBase
+public class VerifyCommand(CommandService service, Dictionary<RobotTemplate, int> request) : CommandBase(service, request)
 {
-    public VerifyCommand(InventoryCommandService service, Dictionary<(ECategory, EItemType), int> request) : base(service, request) { }
-    
     public override void Execute()
     {
         Service.Verify(Request);

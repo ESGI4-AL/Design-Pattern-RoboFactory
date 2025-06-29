@@ -24,6 +24,7 @@ public static class SystemResponseTypeUtils
             SystemResponseType.Available => "AVAILABLE",
             SystemResponseType.Unavailable => "UNAVAILABLE",
             SystemResponseType.StockUpdated => "STOCK_UPDATED",
+            SystemResponseType.TemplatesUpdated => "TEMPLATE_UPDATED",
             SystemResponseType.Error => "ERROR",
             _ => throw new ArgumentOutOfRangeException(nameof(systemResponseType))
         };

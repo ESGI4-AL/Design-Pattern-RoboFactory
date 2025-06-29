@@ -2,10 +2,10 @@ namespace RoboFactory.Commands.CommandTypes;
 
 public abstract class CommandBase
 {
-    protected InventoryCommandService Service { get; set; }
-    protected Dictionary<(ECategory, EItemType), int> Request { get; set; }
+    protected CommandService Service { get; set; }
+    protected Dictionary<RobotTemplate, int> Request { get; set; }
 
-    protected CommandBase(InventoryCommandService service, Dictionary<(ECategory, EItemType), int> request)
+    protected CommandBase(CommandService service, Dictionary<RobotTemplate, int> request)
     {
         Service = service;
         Request = request;

@@ -10,6 +10,7 @@ public static class CommandTypeUtils
         return command.ToUpper() switch
         {
             "STOCKS" => CommandType.Stocks,
+            "ADD_TEMPLATE" => CommandType.AddTemplate,
             "NEEDED_STOCKS" => CommandType.NeededStocks,
             "INSTRUCTIONS" => CommandType.Instructions,
             "VERIFY" => CommandType.Verify,
@@ -19,6 +20,7 @@ public static class CommandTypeUtils
             _ => CommandType.Unknown
         };
     }
+    
     
     public static string ToString(CommandType commandType)
     {

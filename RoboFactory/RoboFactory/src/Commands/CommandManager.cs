@@ -5,9 +5,9 @@ namespace RoboFactory.Commands;
 
 public class CommandManager
 {
-    private readonly InventoryCommandService _commandService;
+    private readonly CommandService _commandService;
     
-    public CommandManager(InventoryCommandService commandService)
+    public CommandManager(CommandService commandService)
     {
         _commandService = commandService;
     }
@@ -23,11 +23,9 @@ public class CommandManager
         string[] parts = input.Trim().Split(' ', 2);
         string args = parts.Length > 1 ? parts[1] : string.Empty;
         string commandText = parts[0];
-
+        
         try
         {
-            Dictionary<(ECategory, EItemType), int> requestedRobots = ParseRobotRequest(args);
-
             CommandType commandType = CommandTypeUtils.FromStringToEnum(commandText);
 
             CommandBase command;
@@ -35,19 +33,22 @@ public class CommandManager
             switch (commandType)
             {
                 case CommandType.Stocks:
-                    command = new StocksCommand(_commandService, requestedRobots);
+                    command = new StocksCommand(_commandService, ParseRobotRequest(args));
                     break;
                 case CommandType.NeededStocks:
-                    command = new NeededStocksCommand(_commandService, requestedRobots);
+                    command = new NeededStocksCommand(_commandService, ParseRobotRequest(args));
                     break;
                 case CommandType.Instructions:
-                    command = new InstructionsCommand(_commandService, requestedRobots);
+                    command = new InstructionsCommand(_commandService, ParseRobotRequest(args));
                     break;
                 case CommandType.Verify:
-                    command = new VerifyCommand(_commandService, requestedRobots);
+                    command = new VerifyCommand(_commandService, ParseRobotRequest(args));
                     break;
                 case CommandType.Produce:
-                    command = new ProduceCommand(_commandService, requestedRobots);
+                    command = new ProduceCommand(_commandService, ParseRobotRequest(args));
+                    break;
+                case CommandType.AddTemplate:
+                    command = new AddTemplateCommand(_commandService, ParseTemplateRequest(args));
                     break;
                 default:
                     throw new ArgumentException($"Unknown command '{commandText}'");
@@ -65,9 +66,9 @@ public class CommandManager
     /**
      * Analyse la chaîne d'arguments pour extraire les demandes de robots.
      */
-    private Dictionary<(ECategory, EItemType), int> ParseRobotRequest(string args)
+    private Dictionary<RobotTemplate, int> ParseRobotRequest(string args)
     {
-        Dictionary<(ECategory, EItemType), int> requestedRobots = new Dictionary<(ECategory, EItemType), int>();
+        Dictionary<RobotTemplate, int> requestedRobots = new Dictionary<RobotTemplate, int>();
         
         if (string.IsNullOrWhiteSpace(args))
             return requestedRobots;
@@ -83,17 +84,38 @@ public class CommandManager
                 throw new ArgumentException($"Invalid robot request format: {request}");
             
             string robotName = parts[1].Trim();
-            
-            // Résolve la catégorie du robot et vérifie s'il existe
-            (ECategory category, EItemType itemType) = RobotResolver.ResolveName(robotName);
+
+            RobotTemplate robotTemplate = _commandService.GetTemplate(robotName);
             
             // Ajoute ou met à jour la quantité demandée
-            if (requestedRobots.ContainsKey((category, itemType)))
-                requestedRobots[(category, itemType)] += quantity;
+            if (requestedRobots.ContainsKey(robotTemplate))
+                requestedRobots[robotTemplate] += quantity;
             else
-                requestedRobots[(category, itemType)] = quantity;
+                requestedRobots[robotTemplate] = quantity;
         }
         
         return requestedRobots;
+    }
+    
+    private Dictionary<RobotTemplate, int> ParseTemplateRequest(string args)
+    {
+        Dictionary<RobotTemplate, int> templateRequest = new Dictionary<RobotTemplate, int>();
+        var parts = args.Split(',').Select(p => p.Trim()).ToArray();
+
+        if (parts.Length != 6)
+            throw new ArgumentException("ADD_TEMPLATE requires: Name, and 6 category parts");
+
+        RobotTemplate newTemplate = new RobotTemplate(
+            parts[0], // Name
+            ECategory.Generalist, // category (volontairement généraliste pour être passée à l'assemblyman)
+            RobotComponentResolver.ResolveName(parts[1]), // system
+            RobotComponentResolver.ResolveName(parts[2]), // core
+            RobotComponentResolver.ResolveName(parts[3]), // generator
+            RobotComponentResolver.ResolveName(parts[4]), // arms
+            RobotComponentResolver.ResolveName(parts[5]) // legs
+            ); 
+        
+        templateRequest[newTemplate] = 1;
+        return templateRequest;
     }
 }

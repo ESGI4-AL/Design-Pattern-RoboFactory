@@ -9,7 +9,7 @@ namespace RoboFactory
         {
             var factoryInventory = new FactoryInventory();
             var assemblyManual = new AssemblyManual();
-            var commandService = new InventoryCommandService(factoryInventory, assemblyManual);
+            var commandService = new CommandService(factoryInventory, assemblyManual);
             var commandManager = new CommandManager(commandService);
             
             DisplayMessages.DisplayWelcomeMessage();

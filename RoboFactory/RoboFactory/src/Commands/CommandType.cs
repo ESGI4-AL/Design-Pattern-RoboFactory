@@ -2,6 +2,7 @@
 
 public enum CommandType
 {
+    AddTemplate,
     Stocks,
     NeededStocks,
     Instructions,
